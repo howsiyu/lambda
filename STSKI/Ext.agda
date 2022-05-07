@@ -6,7 +6,7 @@ open import STLC.Type T
 open import STSKI.Term T
 open import STSKI.STLC T
 import STLC.Term T as Lam
-open import STSKI.Combinators T
+open import STLC.Combinators T
 open import STLC.Beta T
 open import Function using (flip; _∘_)
 import Relation.Binary.Construct.Closure.ReflexiveTransitive as Star

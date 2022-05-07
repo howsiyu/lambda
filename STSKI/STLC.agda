@@ -6,7 +6,7 @@ open import STLC.Type T
 open import STSKI.Term T
 import STLC.Term T as Lam
 open import STLC.Beta T
-open import STSKI.Combinators T
+open import STLC.Combinators T
 open import Function using (_∘_; flip)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong; cong₂; inspect; [_])
 

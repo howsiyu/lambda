@@ -1,4 +1,4 @@
-module STSKI.Combinators (T : Set) where
+module STLC.Combinators (T : Set) where
 
 open import STLC.Type T
 open import STLC.Term T
