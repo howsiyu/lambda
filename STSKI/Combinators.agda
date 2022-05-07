@@ -3,10 +3,9 @@ module STSKI.Combinators (T : Set) where
 open import STLC.Type T
 open import STLC.Term T
 open import STLC.Beta T
-open import Data.Star using (ε; _◅_; _◅◅_)
-open import Data.Star.Properties
 open import Relation.Binary.PropositionalEquality
 open import Function using (flip; _∘_)
+open import Relation.Binary.Construct.Closure.ReflexiveTransitive.Properties using (module StarReasoning)
 
 𝒊 : ∀ {Γ a} → Γ ⊢ a ⇒ a
 𝒊 = abs (var here)

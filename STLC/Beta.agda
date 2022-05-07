@@ -3,8 +3,8 @@ module STLC.Beta (T : Set) where
 open import STLC.Type T
 open import STLC.Term T
 open import Function using (flip; _∘_)
-open import Data.Star using (Star; ε; _◅_; _◅◅_; gmap; concat)
-import Data.Star using (map)
+import Relation.Binary.Construct.Closure.ReflexiveTransitive as Star
+open Star using (Star; ε; _◅_; _◅◅_) public
 open import Relation.Binary.Core using (Rel)
 open import Agda.Primitive using (lzero)
 open import Data.Product using (∃; _×_; _,_)
@@ -30,16 +30,16 @@ _*β←_ = flip _→β*_
 β*-reflexive refl = ε
 
 β*-app₁ : ∀ {Γ a b t2} {t1 t1' : Γ ⊢ a ⇒ b} → t1 →β* t1' → app t1 t2 →β* app t1' t2
-β*-app₁ {t2 = t2} = gmap (flip app t2) β-app₁
+β*-app₁ {t2 = t2} = Star.gmap (flip app t2) β-app₁
 
 β*-app₂ : ∀ {Γ a b} {t1 : Γ ⊢ a ⇒ b} {t2 t2'} → t2 →β* t2' → app t1 t2 →β* app t1 t2'
-β*-app₂ {t1 = t1} = gmap (app t1) β-app₂
+β*-app₂ {t1 = t1} = Star.gmap (app t1) β-app₂
 
 β*-app : ∀ {Γ a b} {t1 t1' : Γ ⊢ a ⇒ b} → t1 →β* t1' → ∀ {t2 t2'} → t2 →β* t2' → app t1 t2 →β* app t1' t2'
 β*-app p1 p2 = β*-app₁ p1 ◅◅ β*-app₂ p2
 
 β*-abs : ∀ {Γ a b} {t t' : (a ∷ Γ) ⊢ b} → t →β* t' → abs t →β* abs t'
-β*-abs = gmap abs β-abs
+β*-abs = Star.gmap abs β-abs
 
 infix 3 _→βP_
 data _→βP_ {Γ} : ∀ {a} → Rel (Γ ⊢ a) lzero where
@@ -63,16 +63,16 @@ _→βP*_ = Star _→βP_
 βP-app₂ p = βP-app βP-refl p
 
 βP*-app₁ : ∀ {Γ a b t2} {t1 t1' : Γ ⊢ a ⇒ b} → t1 →βP* t1' → app t1 t2 →βP* app t1' t2
-βP*-app₁ {t2 = t2} = gmap (flip app t2) βP-app₁
+βP*-app₁ {t2 = t2} = Star.gmap (flip app t2) βP-app₁
 
 βP*-app₂ : ∀ {Γ a b} {t1 : Γ ⊢ a ⇒ b} {t2 t2'} → t2 →βP* t2' → app t1 t2 →βP* app t1 t2'
-βP*-app₂ {t1 = t1} = gmap (app t1) βP-app₂
+βP*-app₂ {t1 = t1} = Star.gmap (app t1) βP-app₂
 
 βP*-app : ∀ {Γ a b} {t1 t1' : Γ ⊢ a ⇒ b} → t1 →βP* t1' → ∀ {t2 t2'} → t2 →βP* t2' → app t1 t2 →βP* app t1' t2'
 βP*-app p1 p2 = βP*-app₁ p1 ◅◅ βP*-app₂ p2
 
 βP*-abs : ∀ {Γ a b} {t t' : (a ∷ Γ) ⊢ b} → t →βP* t' → abs t →βP* abs t'
-βP*-abs = gmap abs βP-abs
+βP*-abs = Star.gmap abs βP-abs
 
 βP-reduce* : ∀ {Γ a} → Γ ⊢ a → Γ ⊢ a
 βP-reduce* (var i) = var i
@@ -95,7 +95,7 @@ _→βP*_ = Star _→βP_
 →β⊂→βP (β-abs p) = βP-abs (→β⊂→βP p)
 
 →β*⊂→βP* : ∀ {Γ a} → {t t' : Γ ⊢ a} → t →β* t' → Star _→βP_ t t'
-→β*⊂→βP* = Data.Star.map →β⊂→βP
+→β*⊂→βP* = Star.map →β⊂→βP
 
 →βP⊂→β* : ∀ {Γ a} → {t t' : Γ ⊢ a} → t →βP t' → t →β* t'
 →βP⊂→β* (βP-red p₁ p₂) = β*-app (β*-abs (→βP⊂→β* p₁)) (→βP⊂→β* p₂) ◅◅ β-red ◅ ε
@@ -104,7 +104,7 @@ _→βP*_ = Star _→βP_
 →βP⊂→β* (βP-abs p) = β*-abs (→βP⊂→β* p)
 
 →βP*⊂→β* : ∀ {Γ a} → {t t' : Γ ⊢ a} → t →βP* t' → t →β* t'
-→βP*⊂→β* = concat ∘ Data.Star.map →βP⊂→β*
+→βP*⊂→β* = Star.concat ∘ Star.map →βP⊂→β*
 
 
 map-β : ∀ {Γ Δ} → (ρ : Γ ⊆ Δ) → (∀ {a} {t t' : Γ ⊢ a} → t →β t' → map ρ t →β map ρ t')

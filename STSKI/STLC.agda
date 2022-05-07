@@ -1,3 +1,5 @@
+{-# OPTIONS --with-K #-}
+
 module STSKI.STLC (T : Set) where
 
 open import STLC.Type T
@@ -6,7 +8,6 @@ import STLC.Term T as Lam
 open import STLC.Beta T
 open import STSKI.Combinators T
 open import Function using (_∘_; flip)
-open import Data.Star using (ε; _◅_; _◅◅_)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong; cong₂; inspect; [_])
 
 ski-map : ∀ {Γ a} → Γ Lam.⊢ a → Γ ⊢ a

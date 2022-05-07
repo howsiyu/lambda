@@ -4,14 +4,13 @@ open import STLC.Type T
 open import STLC.Term T
 open import STLC.Beta T
 open import Function using (_on_; _∘_)
-open import Data.Star using (Star; ε; _◅◅_)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Data.Product using (∃; _×_; _,_)
 open import Relation.Nullary using (¬_; Dec; yes; no)
 open import Relation.Binary using (Rel)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; inspect; [_])
 open import Induction.WellFounded
-open import Induction.Nat using (<-well-founded)
+open import Data.Nat.Induction using (<-wellFounded)
 open import Agda.Primitive using (lzero)
 open import Relation.Unary using (_⊆′_)
 
@@ -132,14 +131,14 @@ redex? (abs t) with redex? t
 _≪_ : ∀ {Γ a} → Rel (Γ ⊢ a) lzero
 t1 ≪ t2 = redex t2 × ∀ (r1 : redex t1) → ∃ (λ (r2 : redex t2) → deg r1 ≺ deg r2)
 
-≪-wf : ∀ {Γ a} → Well-founded (_≪_ {Γ} {a})
+≪-wf : ∀ {Γ a} → WellFounded (_≪_ {Γ} {a})
 ≪-wf {Γ} {a} = let
-    open Subrelation {A = Γ ⊢ a} ≪⇒< renaming (well-founded to sub-wf)
-    open Inverse-image {A = Γ ⊢ a} rank renaming (well-founded to ii-wf)
-  in sub-wf (ii-wf <-well-founded)
+    open Subrelation {A = Γ ⊢ a} ≪⇒< renaming (wellFounded to sub-wf)
+    open Inverse-image {A = Γ ⊢ a} rank renaming (wellFounded to ii-wf)
+  in sub-wf (ii-wf <-wellFounded)
   where
   open import Data.Nat.Base using (ℕ; suc; _≤_; z≤n; s≤s; _<_; _⊔_)
-  open import Data.Nat.Properties using (≤-refl; ≤-trans; m≤m⊔n; n≤m⊔n; ⊔-sel)
+  open import Data.Nat.Properties using (≤-refl; ≤-trans; m≤m⊔n; m≤n⊔m; ⊔-sel)
   
   type-rank : Type → ℕ
   type-rank (base x) = 0
@@ -164,8 +163,8 @@ t1 ≪ t2 = redex t2 × ∀ (r1 : redex t1) → ∃ (λ (r2 : redex t2) → deg 
   
   redex-rank≤rank : ∀ {Γ a} (t : Γ ⊢ a) (r : redex t) → deg-rank (deg r) ≤ rank t
   redex-rank≤rank .(app (abs s) t) (r-red {s = s} {t = t}) = ≤-trans (m≤m⊔n _ (rank s)) (m≤m⊔n _ (rank t))
-  redex-rank≤rank (app s t) (r-app₁ r) = ≤-trans (≤-trans (redex-rank≤rank s r) (n≤m⊔n (abs-rank s) (rank s))) (m≤m⊔n _ (rank t))
-  redex-rank≤rank (app s t) (r-app₂ r) = ≤-trans (redex-rank≤rank t r) (n≤m⊔n (abs-rank s ⊔ rank s) (rank t))
+  redex-rank≤rank (app s t) (r-app₁ r) = ≤-trans (≤-trans (redex-rank≤rank s r) (m≤n⊔m (abs-rank s) (rank s))) (m≤m⊔n _ (rank t))
+  redex-rank≤rank (app s t) (r-app₂ r) = ≤-trans (redex-rank≤rank t r) (m≤n⊔m (abs-rank s ⊔ rank s) (rank t))
   redex-rank≤rank (abs t) (r-abs r) = redex-rank≤rank t r
 
   ⊔-zero : ∀ m n → m ⊔ n ≡ 0 → m ≡ 0 × n ≡ 0
@@ -194,7 +193,7 @@ t1 ≪ t2 = redex t2 × ∀ (r1 : redex t1) → ∃ (λ (r2 : redex t2) → deg 
 
   ≺ₜ⇒< : ∀ {a1 a2} → a1 ≺ₜ a2 → type-rank a1 < type-rank a2
   ≺ₜ⇒< {.a} {a ⇒ b} left = s≤s (m≤m⊔n (type-rank a) (type-rank b))
-  ≺ₜ⇒< {.b} {a ⇒ b} right = s≤s (n≤m⊔n (type-rank a) (type-rank b))
+  ≺ₜ⇒< {.b} {a ⇒ b} right = s≤s (m≤n⊔m (type-rank a) (type-rank b))
 
   ≪⇒< : ∀ {Γ a} → {t1 t2 : Γ ⊢ a} → t1 ≪ t2 → rank t1 < rank t2
   ≪⇒< {t1 = t1} {t2 = t2} (r , f) with max-rank-redex? t1

@@ -1,3 +1,5 @@
+{-# OPTIONS --with-K #-}
+
 module STSKI.Ext (T : Set) where
 
 open import STLC.Type T
@@ -7,7 +9,7 @@ import STLC.Term T as Lam
 open import STSKI.Combinators T
 open import STLC.Beta T
 open import Function using (flip; _∘_)
-open import Data.Star using (Star; ε; _◅_; _◅◅_; gmap; map; concat)
+import Relation.Binary.Construct.Closure.ReflexiveTransitive as Star
 open import Relation.Binary.Core using (Rel)
 open import Agda.Primitive using (lzero)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; cong; cong₂; inspect; [_])
@@ -31,16 +33,16 @@ Ext*-reflexive : ∀ {Γ a} {t t' : Γ ⊢ a} → t ≡ t' → t →Ext* t'
 Ext*-reflexive refl = ε
 
 Ext*-app₁ : ∀ {Γ a b t2} {t1 t1' : Γ ⊢ a ⇒ b} → t1 →Ext* t1' → app t1 t2 →Ext* app t1' t2
-Ext*-app₁ {t2 = t2} = gmap (flip app t2) Ext-app₁
+Ext*-app₁ {t2 = t2} = Star.gmap (flip app t2) Ext-app₁
 
 Ext*-app₂ : ∀ {Γ a b} {t1 : Γ ⊢ a ⇒ b} {t2 t2'} → t2 →Ext* t2' → app t1 t2 →Ext* app t1 t2'
-Ext*-app₂ {t1 = t1} = gmap (app t1) Ext-app₂
+Ext*-app₂ {t1 = t1} = Star.gmap (app t1) Ext-app₂
 
 Ext*-app : ∀ {Γ a b} {t1 t1' : Γ ⊢ a ⇒ b} → t1 →Ext* t1' → ∀ {t2 t2'} → t2 →Ext* t2' → app t1 t2 →Ext* app t1' t2'
 Ext*-app p1 p2 = Ext*-app₁ p1 ◅◅ Ext*-app₂ p2
 
 w-ext* : ∀ {Γ a b} {A A' : a ∷ Γ ⊢ b} → A →Ext* A' → abs A →Ext* abs A'
-w-ext* = gmap abs w-ext
+w-ext* = Star.gmap abs w-ext
 
 id-ski-lam : ∀ {Γ a} (A : Γ ⊢ a) → A →Ext* ski-map (lam-map A)
 id-ski-lam I = I-ext ◅ w-ext (I-red (var here)) ◅ ε 

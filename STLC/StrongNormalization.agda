@@ -3,7 +3,6 @@ module STLC.StrongNormalization (T : Set)  where
 open import STLC.Type T
 open import STLC.Term T
 open import STLC.Beta T
-open import Data.Star using (ε; _◅_)
 open import Induction.WellFounded
 open import Function using (id; _∘_)
 open import Relation.Binary using (Rel)
@@ -71,7 +70,7 @@ module Product {A B : Set} (RelA : Rel A lzero) (RelB : Rel B lzero) where
     accessible' (acc rsA) accB ._ (left  x′<x) = accessible (rsA _ x′<x) accB
     accessible' accA (acc rsB) ._ (right y′<y) = accessible accA (rsB _ y′<y)
 
-  wellFounded : Well-founded RelA → Well-founded RelB → Well-founded _<_
+  wellFounded : WellFounded RelA → WellFounded RelB → WellFounded _<_
   wellFounded wfA wfB (x , y) = accessible (wfA x) (wfB y)
 
 abs-lemma : ∀ {a b Γ} (t : a ∷ Γ ⊢ b) → (∀ {Δ} (ρ : Γ ⊆ Δ) (u : Δ ⊢ a) → reducible u → reducible (map (lift ρ) t ⟦ u ⟧)) → reducible (abs t)
@@ -134,5 +133,5 @@ all-reducible : ∀ {Γ} {a} (t : Γ ⊢ a) → reducible t
 all-reducible t rewrite bind-id t = bind-reducible id◅ (λ {a} i → CR3 a (var i) (nvar , λ _ ())) t
 
 -- aka strong normalization theorem
-β←-wf : ∀ {Γ a} → Well-founded (_β←_ {Γ} {a})
+β←-wf : ∀ {Γ a} → WellFounded (_β←_ {Γ} {a})
 β←-wf {Γ} {a} t = CR1 a t (all-reducible t)

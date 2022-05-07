@@ -2,7 +2,6 @@ module STLC.ChurchRosser (T : Set) where
 
 open import STLC.Term T
 open import STLC.Beta T
-open import Data.Star using (Star; ε; _◅_; _◅◅_)
 open import Data.Product using (∃; _×_; _,_)
 
 star-lemma : ∀ {Γ a} {t t' : Γ ⊢ a} → t →βP t' → t' →βP βP-reduce* t

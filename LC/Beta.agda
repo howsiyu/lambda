@@ -2,7 +2,8 @@ module LC.Beta where
 
 open import LC.Term
 open import Function using (flip; _∘_)
-open import Data.Star using (Star; ε; _◅_; _◅◅_; gmap; map; concat) public
+import Relation.Binary.Construct.Closure.ReflexiveTransitive as Star
+open Star using (Star; ε; _◅_; _◅◅_) public
 open import Relation.Binary.Core using (Rel)
 open import Agda.Primitive using (lzero)
 open import Data.Product using (∃; _×_; _,_)
@@ -19,16 +20,16 @@ _→β*_ : ∀ {Γ} → Rel (Term Γ) lzero
 _→β*_ = Star _→β_
 
 β*-app₁ : ∀ {Γ} {t2 t1 t1' : Term Γ} → t1 →β* t1' → app t1 t2 →β* app t1' t2
-β*-app₁ {t2 = t2} = gmap (flip app t2) β-app₁
+β*-app₁ {t2 = t2} = Star.gmap (flip app t2) β-app₁
 
 β*-app₂ : ∀ {Γ} {t1 t2 t2' : Term Γ} → t2 →β* t2' → app t1 t2 →β* app t1 t2'
-β*-app₂ {t1 = t1} = gmap (app t1) β-app₂
+β*-app₂ {t1 = t1} = Star.gmap (app t1) β-app₂
 
 β*-app : ∀ {Γ} {t1 t1' : Term Γ} → t1 →β* t1' → ∀ {t2 t2'} → t2 →β* t2' → app t1 t2 →β* app t1' t2'
 β*-app p1 p2 = β*-app₁ p1 ◅◅ β*-app₂ p2
 
 β*-abs : ∀ {Γ} {t t' : Term (suc Γ)} → t →β* t' → abs t →β* abs t'
-β*-abs = gmap abs β-abs
+β*-abs = Star.gmap abs β-abs
 
 
 infix 3 _→βP_
@@ -67,7 +68,7 @@ _→βP*_ = Star _→βP_
 →β⊂→βP (β-abs p) = βP-abs (→β⊂→βP p)
 
 →β*⊂→βP* : ∀ {Γ} → {t t' : Term Γ} → t →β* t' → Star _→βP_ t t'
-→β*⊂→βP* = map →β⊂→βP
+→β*⊂→βP* = Star.map →β⊂→βP
 
 →βP⊂→β* : ∀ {Γ} → {t t' : Term Γ} → t →βP t' → t →β* t'
 →βP⊂→β* (βP-red p₁ p₂) = β*-app (β*-abs (→βP⊂→β* p₁)) (→βP⊂→β* p₂) ◅◅ β-red ◅ ε
@@ -76,7 +77,7 @@ _→βP*_ = Star _→βP_
 →βP⊂→β* (βP-abs p) = β*-abs (→βP⊂→β* p)
 
 →βP*⊂→β* : ∀ {Γ} → {t t' : Term Γ} → t →βP* t' → t →β* t'
-→βP*⊂→β* = concat ∘ map →βP⊂→β*
+→βP*⊂→β* = Star.concat ∘ Star.map →βP⊂→β*
 
 
 rename-β : ∀ {Γ Δ} → (ρ : Γ ⊆ Δ) → (∀ {t t' : Term Γ} → t →β t' → rename ρ t →β rename ρ t')

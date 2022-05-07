@@ -1,11 +1,9 @@
--- {-# OPTIONS --without-K #-}
+{-# OPTIONS --with-K #-}
 
 module STSKI.Term (T : Set) where
 
 open import STLC.Type T
 open import Function using (_∘_; flip)
-open import Data.Star using (Star; ε; _◅_; _◅◅_)
-open import Data.Star.Properties
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong; cong₂; inspect; [_])
 open import Data.Product using (∃; _×_; _,_; proj₂)
 
